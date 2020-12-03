@@ -18,7 +18,7 @@
 # shellcheck source=scripts/ci/libraries/_script_init.sh
 . "$( dirname "${BASH_SOURCE[0]}" )/../libraries/_script_init.sh"
 
-function verify_prod_image_has_airflow_and_providers {
+function verify_prod_image_has_airflow {
     echo
     echo "Airflow folders installed in the image:"
     echo
@@ -47,28 +47,6 @@ function verify_prod_image_has_airflow_and_providers {
     else
         echo
         echo -e " \e[32mOK. Airflow is installed.\e[0m"
-        echo
-    fi
-
-    EXPECTED_MIN_PROVIDERS_DIRS_COUNT="240"
-    readonly EXPECTED_MIN_PROVIDERS_DIRS_COUNT
-
-    COUNT_AIRFLOW_PROVIDERS_DIRS=$(docker run --rm --entrypoint /bin/bash "${AIRFLOW_PROD_IMAGE}" -c \
-         'find '"${AIRFLOW_INSTALLATION_LOCATION}"'/lib/python*/site-packages/airflow/providers -type d | grep -c "" | xargs')
-
-    echo
-    echo "Number of providers dirs: ${COUNT_AIRFLOW_PROVIDERS_DIRS}"
-    echo
-
-    if [ "${COUNT_AIRFLOW_PROVIDERS_DIRS}" -lt "${EXPECTED_MIN_PROVIDERS_DIRS_COUNT}" ]; then
-        >&2 echo
-        >&2 echo Number of providers folders installed is less than ${EXPECTED_MIN_PROVIDERS_DIRS_COUNT}
-        >&2 echo This is unexpected. Please investigate, looking at the output above!
-        >&2 echo
-        exit 1
-    else
-        echo
-        echo -e " \e[32mOK. Airflow Providers are installed.\e[0m"
         echo
     fi
 }
@@ -111,6 +89,6 @@ function pull_prod_image() {
 build_images::prepare_prod_build
 
 
-verify_prod_image_has_airflow_and_providers
+verify_prod_image_has_airflow
 
 verify_prod_image_dependencies
